@@ -4,8 +4,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.insurance.bean.Plan;
+import org.insurance.constants.AppConstants;
+import org.insurance.props.AppProperties;
 import org.insurance.service.PlanServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -20,8 +21,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class PlanController {
 
-	@Autowired
-	PlanServiceImpl planServiceImpl;
+	private PlanServiceImpl planServiceImpl;
+
+	private Map<String, String> messages;
+
+	public PlanController(PlanServiceImpl planServiceImpl, AppProperties appProps) {
+		this.planServiceImpl = planServiceImpl;
+		this.messages = appProps.getMessages();
+	}
 
 	@GetMapping("/categories")
 	public ResponseEntity<Map<Integer, String>> getAllCategories() {
@@ -29,20 +36,24 @@ public class PlanController {
 		Map<Integer, String> categories = planServiceImpl.getPlanCategories();
 
 		return new ResponseEntity<>(categories, HttpStatus.OK);
-
 	}
 
 	@PostMapping("/plan")
 	public ResponseEntity<String> savePlan(@RequestBody Plan plan) {
-		String respMsg = "";
+
+		String respMsg = AppConstants.EMPTY_STR;
+
 		boolean isSaved = planServiceImpl.savePlan(plan);
+
 		if (isSaved) {
-			respMsg = "Plan Saved";
+
+			respMsg = AppConstants.PLAN_SAVE_SUCCESS;
+
 		} else {
 
-			respMsg = "plan not Saved";
+			respMsg = AppConstants.PLAN_DELETATION_FAIL;
 		}
-		return new ResponseEntity<>(respMsg, HttpStatus.CREATED);
+		return new ResponseEntity<String>(respMsg, HttpStatus.CREATED);
 	}
 
 	@GetMapping("/plans")
@@ -51,62 +62,58 @@ public class PlanController {
 		return new ResponseEntity<>(isList, HttpStatus.OK);
 	}
 
-	
-	
-	  @GetMapping("/plan/{planId}")
-	  public ResponseEntity<Plan>editPlan(@PathVariable Integer planId) {
-	  
-	  Plan plan = planServiceImpl.getPlanById(planId);
-	  
-	  return new ResponseEntity<>(plan, HttpStatus.OK); }
-	  
-	  
+	@GetMapping("/plan/{planId}")
+	public ResponseEntity<Plan> editPlan(@PathVariable Integer planId) {
+
+		Plan plan = planServiceImpl.getPlanById(planId);
+
+		return new ResponseEntity<Plan>(plan, HttpStatus.OK);
+	}
 
 	@PostMapping("/plan/{planId}")
 	public ResponseEntity<String> updatePlan(@RequestBody Plan plan) {
 		{
+			String respMsg = AppConstants.EMPTY_STR;
 
-			String responseMsg;
 			boolean isUpdated = planServiceImpl.updatePlan(plan);
 
 			if (isUpdated) {
 
-				responseMsg = "Plan updated";
+				respMsg = AppConstants.PLAN_UPDATED_SUCCESS;
 			} else {
-				responseMsg = "Plan not Updated";
+				respMsg = AppConstants.PLAN_UPDATION_FAIL;
 			}
 
-			return new ResponseEntity<>(responseMsg, HttpStatus.OK);
+			return new ResponseEntity<String>(respMsg, HttpStatus.OK);
 		}
 	}
 
 	@DeleteMapping("/plan/{planId}")
 	public ResponseEntity<String> deletePlan(Integer planId) {
 
-		String responseMsg = "";
+		String respMsg = AppConstants.EMPTY_STR;
 		boolean isDeleted = planServiceImpl.deletePlanById(planId);
 		if (isDeleted) {
-			responseMsg = "Plan Deleted";
-		} else {
-			responseMsg = "Plan Not Deleted";
-		}
-		return new ResponseEntity<>(responseMsg, HttpStatus.OK);
 
+			respMsg = AppConstants.PLAN_DELETED_SUCCESS;
+		} else {
+			respMsg = AppConstants.PLAN_DELETATION_FAIL;
+		}
+		return new ResponseEntity<String>(respMsg, HttpStatus.OK);
 	}
 
 	@PutMapping("/status-change/{planId/{status}")
 	public ResponseEntity<String> statusChange(@RequestParam Integer planId, @PathVariable String status) {
 
-		String responseMsg = "";
+		String respMsg = AppConstants.EMPTY_STR;
 		boolean isStatusChange = planServiceImpl.planStatusChagne(planId, status);
 
 		if (isStatusChange) {
-			responseMsg = "Status Change Successfully";
+			respMsg = AppConstants.STATUS_CAHNGE_SUCCESS;
 		} else {
-			responseMsg = "Status Not Changed";
+			respMsg = AppConstants.STATUS_CHANGE_FAIL;
 		}
-
-		return new ResponseEntity<>(responseMsg, HttpStatus.OK);
+		return new ResponseEntity<String>(respMsg, HttpStatus.OK);
 	}
 
 }
