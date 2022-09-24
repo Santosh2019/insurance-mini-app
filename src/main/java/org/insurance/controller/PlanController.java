@@ -7,6 +7,7 @@ import org.insurance.bean.Plan;
 import org.insurance.constants.AppConstants;
 import org.insurance.props.AppProperties;
 import org.insurance.service.PlanServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -21,13 +22,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class PlanController {
 
+	@Autowired
 	private PlanServiceImpl planServiceImpl;
-
-	private Map<String, String> messages;
 
 	public PlanController(PlanServiceImpl planServiceImpl, AppProperties appProps) {
 		this.planServiceImpl = planServiceImpl;
-		this.messages = appProps.getMessages();
+		appProps.getMessages();
 	}
 
 	@GetMapping("/categories")
@@ -40,20 +40,14 @@ public class PlanController {
 
 	@PostMapping("/plan")
 	public ResponseEntity<String> savePlan(@RequestBody Plan plan) {
-
 		String respMsg = AppConstants.EMPTY_STR;
-
 		boolean isSaved = planServiceImpl.savePlan(plan);
-
 		if (isSaved) {
-
 			respMsg = AppConstants.PLAN_SAVE_SUCCESS;
-
 		} else {
-
 			respMsg = AppConstants.PLAN_DELETATION_FAIL;
 		}
-		return new ResponseEntity<String>(respMsg, HttpStatus.CREATED);
+		return new ResponseEntity<>(respMsg, HttpStatus.CREATED);
 	}
 
 	@GetMapping("/plans")
@@ -64,27 +58,21 @@ public class PlanController {
 
 	@GetMapping("/plan/{planId}")
 	public ResponseEntity<Plan> editPlan(@PathVariable Integer planId) {
-
 		Plan plan = planServiceImpl.getPlanById(planId);
-
-		return new ResponseEntity<Plan>(plan, HttpStatus.OK);
+		return new ResponseEntity<>(plan, HttpStatus.OK);
 	}
 
 	@PostMapping("/plan/{planId}")
 	public ResponseEntity<String> updatePlan(@RequestBody Plan plan) {
 		{
 			String respMsg = AppConstants.EMPTY_STR;
-
 			boolean isUpdated = planServiceImpl.updatePlan(plan);
-
 			if (isUpdated) {
-
 				respMsg = AppConstants.PLAN_UPDATED_SUCCESS;
 			} else {
 				respMsg = AppConstants.PLAN_UPDATION_FAIL;
 			}
-
-			return new ResponseEntity<String>(respMsg, HttpStatus.OK);
+			return new ResponseEntity<>(respMsg, HttpStatus.OK);
 		}
 	}
 
@@ -94,7 +82,6 @@ public class PlanController {
 		String respMsg = AppConstants.EMPTY_STR;
 		boolean isDeleted = planServiceImpl.deletePlanById(planId);
 		if (isDeleted) {
-
 			respMsg = AppConstants.PLAN_DELETED_SUCCESS;
 		} else {
 			respMsg = AppConstants.PLAN_DELETATION_FAIL;

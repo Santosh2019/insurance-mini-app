@@ -20,6 +20,4 @@ public class AppProperties {
 		return messages;
 	}
 
-	
-
 }
